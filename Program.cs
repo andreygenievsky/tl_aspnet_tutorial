@@ -12,7 +12,20 @@ using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 // ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls13;
 // Console.WriteLine(ServicePointManager.SecurityProtocol);
 
+var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy  =>
+                      {
+                          policy.WithOrigins("*")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                      });
+});
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
     {
@@ -34,6 +47,9 @@ if (app.Environment.IsDevelopment())
 
 //!!! Something wrong with server TLS version in my local machine
 //app.UseHttpsRedirection();
+
+app.UseCors(MyAllowSpecificOrigins);
+app.UseCors("AllowPATCH");
 
 app.UseAuthorization();
 app.MapControllers();

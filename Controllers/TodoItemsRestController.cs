@@ -10,9 +10,12 @@ using TodoRestApi.Models;
 using TodoRestApi.Data;
 using TodoRestApi.Dtos;
 
+using Microsoft.AspNetCore.Cors;
+
 
 namespace TodoRestApi.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class TodoItemsRestController : ControllerBase
@@ -27,7 +30,7 @@ namespace TodoRestApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItemDto>>> GetTodoItems()
         {
-            return await _context.TodoItems.Select(item => ItemToDto(item)).ToListAsync();
+            return await _context.TodoItems.OrderBy(item => item.Id).Select(item => ItemToDto(item)).ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -72,7 +75,7 @@ namespace TodoRestApi.Controllers
             return NoContent();
         }
 
-        [HttpPatch]
+        [HttpPatch("{id}")]
         public async Task<ActionResult<TodoItemPatchDto>> PatchTodoItem(long id, TodoItemPatchDto todoItemDto)
         {
             var todoItem = await _context.TodoItems.FindAsync(id);
